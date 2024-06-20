@@ -80,16 +80,18 @@ This section provides instructions on setting up the PostgreSQL database and run
    dotnet tool install --global dotnet-ef
 
 2. **Apply Migrations**:
-   - Open a terminal or command prompt.
-   - Navigate to your ShopApp project directory.
+   - Open the Package Manager Console in Visual Studio
+   - Use this command to update the database or, if you are cloning for the first time, to create the database locally
 
    
    ```bash
-   cd path/to/your/ShopApp
-
-   # Apply migrations to create the database schema
-   dotnet ef database update
+   update-database
    ```
+   - This command adds a new migration, typically used when adding a new table to the database. After running this command, you also need to update the database to apply your changes
+
+      ```bash
+      add-migration <migration name>
+     ```
 
  ## Running the Application
 
