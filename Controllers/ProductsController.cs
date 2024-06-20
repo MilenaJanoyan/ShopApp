@@ -4,6 +4,9 @@ using ShopApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using static ShopApp.Enums.ProductEnums;
 
+/// <summary>
+/// Controller for managing products.
+/// </summary>
 [Route("api/[controller]")]
 [ApiController]
 public class ProductsController : ControllerBase
@@ -19,7 +22,13 @@ public class ProductsController : ControllerBase
         _productService = productService;
     }
 
-    // GET: api/products
+    /// <summary>
+    /// Retrieves a list of products.
+    /// </summary>
+    /// <param name="skip">Number of products to skip for pagination.</param>
+    /// <param name="take">Number of products to take for pagination.</param>
+    /// <param name="searchTerm">Term to search products by name.</param>
+    /// <returns>A list of products.</returns>
     [HttpGet]
     public async Task<ActionResult<List<Product>>> GetProducts(int skip = 0, int take = 10, string searchTerm = "")
     {
@@ -38,7 +47,11 @@ public class ProductsController : ControllerBase
         }
     }
 
-    // GET: api/products/{id}
+    /// <summary>
+    /// Retrieves a product by its ID.
+    /// </summary>
+    /// <param name="id">The product ID.</param>
+    /// <returns>The product.</returns>
     [HttpGet("{id}")]
     public async Task<ActionResult<Product>> GetProductById(Guid id)
     {
@@ -57,7 +70,10 @@ public class ProductsController : ControllerBase
         }
     }
 
-    // POST: api/products
+    /// <summary>
+    /// Creates a new product.
+    /// </summary>
+    /// <param name="product">The product to create.</param>
     [HttpPost]
     public async Task<ActionResult<Product>> PostProduct(Product product)
     {
@@ -65,7 +81,7 @@ public class ProductsController : ControllerBase
         {
             product.Id = Guid.NewGuid();
             product.Status = ProductStatus.InStock;
-            product.CreatedDate = DateTime.Now;
+            product.CreatedDate = DateTime.UtcNow;
 
             await _productRepository.AddProductAsync(product);
             return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
@@ -76,7 +92,11 @@ public class ProductsController : ControllerBase
         }
     }
 
-    // PUT: api/products/{id}
+    /// <summary>
+    /// Updates an existing product.
+    /// </summary>
+    /// <param name="id">The ID of the product to update.</param>
+    /// <param name="product">The updated product object.</param>
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct(Guid id, Product product)
     {
@@ -96,7 +116,10 @@ public class ProductsController : ControllerBase
         }
     }
 
-    // DELETE: api/products/{id}
+    /// <summary>
+    /// Deletes a product by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the product to delete.</param>
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProduct(Guid id)
     {
