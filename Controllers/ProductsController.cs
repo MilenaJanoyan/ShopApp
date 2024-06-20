@@ -139,4 +139,50 @@ public class ProductsController : ControllerBase
             return StatusCode(500, "An error occurred while deleting the product.");
         }
     }
+
+    /// <summary>
+    /// Buys a specified quantity of a product.
+    /// </summary>
+    /// <param name="id">The ID of the product to buy.</param>
+    /// <param name="quantity">The quantity to purchase.</param>
+    /// <returns>ActionResult indicating success or failure.</returns>
+    [HttpPost("{id}/buy")]
+    public async Task<IActionResult> BuyProduct(Guid id, int quantity)
+    {
+        try
+        {
+            // Retrieve the product
+            var product = await _productRepository.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            // Check if product is out of stock
+            if (product.Status == ProductStatus.OutOfStock)
+            {
+                return BadRequest("Product is currently out of stock.");
+            }
+
+            // Check if requested quantity exceeds available stock
+            if (quantity > product.StockQuantity)
+            {
+                return BadRequest($"Requested quantity ({quantity}) exceeds available stock ({product.StockQuantity}).");
+            }
+
+            // Attempt to buy the specified quantity
+            bool purchaseSuccess = _productService.Buy(product.Id, quantity);
+
+            if (!purchaseSuccess)
+            {
+                return BadRequest("Failed to purchase the product.");
+            }
+
+            return Ok("Product purchased successfully.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "An error occurred while processing the request.");
+        }
+    }
 }
