@@ -5,14 +5,17 @@ using ShopApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using ShopApp.Repositories;
+using ShopApp.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers().AddNewtonsoftJson(options =>
+builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    // This ensures that the JSON properties are serialized with camelCase.
-    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+    // Configure System.Text.Json settings here
+    options.JsonSerializerOptions.PropertyNamingPolicy = null; // Use CamelCasePropertyNamesContractResolver equivalent
+    options.JsonSerializerOptions.IgnoreNullValues = true; // Ignore null values during serialization
 });
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
@@ -54,6 +57,8 @@ else
 {
     app.UseExceptionHandler("/Error");
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseStaticFiles();
 

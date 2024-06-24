@@ -1,7 +1,8 @@
 ﻿using ShopApp.Data;
 using ShopApp.Models;
-using ShopApp.Repositories;
 using ShopApp.Repositories.Interfaces;
+
+namespace ShopApp.Repositories;
 
 public class ProductRepository : BaseRepository<Product>, IProductRepository
 {

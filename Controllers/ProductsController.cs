@@ -4,6 +4,8 @@ using ShopApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using static ShopApp.Enums.ProductEnums;
 
+namespace ShopApp.Controllers;
+
 /// <summary>
 /// Controller for managing products.
 /// </summary>
@@ -38,19 +40,10 @@ public class ProductsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<Product>>> GetProducts(int skip = 0, int take = 10, string searchTerm = "")
     {
-        try
-        {
-            var products = await _productRepository.GetAllProductsAsync();
-
-            products = _productService.SearchProducts(products, searchTerm);
-
-            var paginatedProducts = products.Skip(skip).Take(take).ToList();
-            return Ok(paginatedProducts);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "An error occurred while retrieving products.");
-        }
+        var products = await _productRepository.GetAllProductsAsync();
+        products = _productService.SearchProducts(products, searchTerm);
+        var paginatedProducts = products.Skip(skip).Take(take).ToList();
+        return Ok(paginatedProducts);
     }
 
     /// <summary>
@@ -61,19 +54,12 @@ public class ProductsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Product>> GetProductById(Guid id)
     {
-        try
+        var product = await _productRepository.GetProductByIdAsync(id);
+        if (product == null)
         {
-            var product = await _productRepository.GetProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return Ok(product);
+            return NotFound();
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "An error occurred while retrieving the product.");
-        }
+        return Ok(product);
     }
 
     /// <summary>
@@ -83,19 +69,11 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Product>> PostProduct(Product product)
     {
-        try
-        {
-            product.Id = Guid.NewGuid();
-            product.Status = ProductStatus.InStock;
-            product.CreatedDate = DateTime.UtcNow;
-
-            await _productRepository.AddProductAsync(product);
-            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "An error occurred while posting the product.");
-        }
+        product.Id = Guid.NewGuid();
+        product.Status = ProductStatus.InStock;
+        product.CreatedDate = DateTime.UtcNow;
+        await _productRepository.AddProductAsync(product);
+        return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
     }
 
     /// <summary>
@@ -106,20 +84,12 @@ public class ProductsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct(Guid id, Product product)
     {
-        try
+        if (id != product.Id)
         {
-            if (id != product.Id)
-            {
-                return BadRequest();
-            }
-
-            await _productRepository.UpdateProductAsync(product);
-            return Ok(product);
+            return BadRequest();
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "An error occurred while updating the product.");
-        }
+        await _productRepository.UpdateProductAsync(product);
+        return Ok(product);
     }
 
     /// <summary>
@@ -129,21 +99,13 @@ public class ProductsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProduct(Guid id)
     {
-        try
+        var product = await _productRepository.GetProductByIdAsync(id);
+        if (product == null)
         {
-            var product = await _productRepository.GetProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            await _productRepository.DeleteProductAsync(id);
-            return NoContent();
+            return NotFound();
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "An error occurred while deleting the product.");
-        }
+        await _productRepository.DeleteProductAsync(id);
+        return NoContent();
     }
 
     /// <summary>
@@ -155,40 +117,29 @@ public class ProductsController : ControllerBase
     [HttpPost("{id}/buy")]
     public async Task<IActionResult> BuyProduct(Guid id, int quantity)
     {
-        try
+        var product = await _productRepository.GetProductByIdAsync(id);
+        if (product == null)
         {
-            // Retrieve the product
-            var product = await _productRepository.GetProductByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            // Check if product is out of stock
-            if (product.Status == ProductStatus.OutOfStock)
-            {
-                return BadRequest("Product is currently out of stock.");
-            }
-
-            // Check if requested quantity exceeds available stock
-            if (quantity > product.StockQuantity)
-            {
-                return BadRequest($"Requested quantity ({quantity}) exceeds available stock ({product.StockQuantity}).");
-            }
-
-            // Attempt to buy the specified quantity
-            bool purchaseSuccess = _productService.Buy(product.Id, quantity);
-
-            if (!purchaseSuccess)
-            {
-                return BadRequest("Failed to purchase the product.");
-            }
-
-            return Ok("Product purchased successfully.");
+            return NotFound();
         }
-        catch (Exception ex)
+
+        if (product.Status == ProductStatus.OutOfStock)
         {
-            return StatusCode(500, "An error occurred while processing the request.");
+            return BadRequest("Product is currently out of stock.");
         }
+
+        if (quantity > product.StockQuantity)
+        {
+            return BadRequest($"Requested quantity ({quantity}) exceeds available stock ({product.StockQuantity}).");
+        }
+
+        bool purchaseSuccess = _productService.Buy(product.Id, quantity);
+
+        if (!purchaseSuccess)
+        {
+            return BadRequest("Failed to purchase the product.");
+        }
+
+        return Ok("Product purchased successfully.");
     }
 }
