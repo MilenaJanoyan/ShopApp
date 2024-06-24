@@ -2,90 +2,89 @@
 using ShopApp.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace ShopApp.Repositories
+namespace ShopApp.Repositories;
+
+public class BaseRepository<T> : IBaseRepository<T> where T : class
 {
-    public class BaseRepository<T> : IBaseRepository<T> where T : class
+    protected readonly ShopDbContext _context;
+
+    public BaseRepository(ShopDbContext context)
     {
-        protected readonly ShopDbContext _context;
+        _context = context;
+    }
 
-        public BaseRepository(ShopDbContext context)
+    public async Task<IEnumerable<T>> GetAllAsync()
+    {
+        try
         {
-            _context = context;
+            return await _context.Set<T>().ToListAsync();
         }
-
-        public async Task<IEnumerable<T>> GetAllAsync()
+        catch (Exception ex)
         {
-            try
-            {
-                return await _context.Set<T>().ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException($"Error occurred while fetching all entities: {ex.Message}", ex);
-            }
+            throw new ApplicationException($"Error occurred while fetching all entities: {ex.Message}", ex);
         }
+    }
 
-        public async Task<T> GetByIdAsync(Guid id)
+    public async Task<T> GetByIdAsync(Guid id)
+    {
+        try
         {
-            try
+            var entity = await _context.Set<T>().FindAsync(id);
+            if (entity == null)
             {
-                var entity = await _context.Set<T>().FindAsync(id);
-                if (entity == null)
-                {
-                    throw new KeyNotFoundException($"Entity with ID {id} not found.");
-                }
-                return entity;
+                throw new KeyNotFoundException($"Entity with ID {id} not found.");
             }
-            catch (Exception ex)
-            {
-                throw new ApplicationException($"Error occurred while fetching entity by ID: {ex.Message}", ex);
-            }
+            return entity;
         }
-
-        public async Task<T> AddAsync(T entity)
+        catch (Exception ex)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-
-            try
-            {
-                await _context.Set<T>().AddAsync(entity);
-                await _context.SaveChangesAsync();
-                return entity;
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException($"Error occurred while adding entity: {ex.Message}", ex);
-            }
+            throw new ApplicationException($"Error occurred while fetching entity by ID: {ex.Message}", ex);
         }
+    }
 
-        public async Task UpdateAsync(T entity)
+    public async Task<T> AddAsync(T entity)
+    {
+        if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+        try
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-
-            try
-            {
-                _context.Set<T>().Update(entity);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException($"Error occurred while updating entity: {ex.Message}", ex);
-            }
+            await _context.Set<T>().AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
-
-        public async Task DeleteAsync(T entity)
+        catch (Exception ex)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            throw new ApplicationException($"Error occurred while adding entity: {ex.Message}", ex);
+        }
+    }
 
-            try
-            {
-                _context.Set<T>().Remove(entity);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException($"Error occurred while deleting entity: {ex.Message}", ex);
-            }
+    public async Task UpdateAsync(T entity)
+    {
+        if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+        try
+        {
+            _context.Set<T>().Update(entity);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ApplicationException($"Error occurred while updating entity: {ex.Message}", ex);
+        }
+    }
+
+    public async Task DeleteAsync(T entity)
+    {
+        if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+        try
+        {
+            _context.Set<T>().Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new ApplicationException($"Error occurred while deleting entity: {ex.Message}", ex);
         }
     }
 }

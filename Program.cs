@@ -5,6 +5,8 @@ using ShopApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using ShopApp.Repositories;
+using ShopApp.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +57,8 @@ else
 {
     app.UseExceptionHandler("/Error");
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseStaticFiles();
 
