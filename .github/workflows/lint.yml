@@ -3,10 +3,10 @@ name: Lint Code
 on:
   push:
     branches:
-      - main  # Adjust branch name if needed
+      - main
   pull_request:
     branches:
-      - main  # Adjust branch name if needed
+      - main
 
 jobs:
   lint:
@@ -19,7 +19,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.x'  # Adjust version as per your project's requirement
+          dotnet-version: '8.0'
 
       - name: Install Super Linter
         uses: github/super-linter@v4
@@ -27,7 +27,3 @@ jobs:
           VALIDATE_ALL_CODEBASE: true
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Optional: Specify any additional languages or linters you want to include
-          # EXCLUDED_RULES: 'eslint,bundler-audit'
-
-      # Add more steps as needed, such as building and testing your C# application
