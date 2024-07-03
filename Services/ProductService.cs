@@ -43,7 +43,6 @@ public class ProductService : IProductService
         // Reduce the quantity in stock
         product.StockQuantity -= quantityToBuy;
 
-        // Check if the quantity has become zero
         if (product.StockQuantity == 0)
         {
             product.Status = ProductStatus.OutOfStock;

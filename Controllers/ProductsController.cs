@@ -1,7 +1,7 @@
 ﻿using ShopApp.Models;
-using ShopApp.Repositories.Interfaces;
-using ShopApp.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using ShopApp.Services.Interfaces;
+using ShopApp.Repositories.Interfaces;
 using static ShopApp.Enums.ProductEnums;
 
 namespace ShopApp.Controllers;
@@ -13,15 +13,15 @@ namespace ShopApp.Controllers;
 [ApiController]
 public class ProductsController : ControllerBase
 {
-    private readonly IProductRepository _productRepository;
     private readonly IProductService _productService;
+    private readonly IProductRepository _productRepository;
 
     public ProductsController(
-        IProductRepository productRepository,
-        IProductService productService)
+        IProductService productService,
+        IProductRepository productRepository)
     {
-        _productRepository = productRepository;
         _productService = productService;
+        _productRepository = productRepository;
     }
 
     /// <summary>

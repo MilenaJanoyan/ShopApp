@@ -2,7 +2,6 @@
 
 public class ProductEnums
 {
-    // Enum for product unit
     public enum ProductUnit
     {
         Piece,
@@ -14,7 +13,6 @@ public class ProductEnums
         Milliliter
     }
 
-    // Enum for product status
     public enum ProductStatus
     {
         InStock,
@@ -22,7 +20,6 @@ public class ProductEnums
         Discontinued
     }
 
-    // Enum for product categories
     public enum ProductCategory
     {
         Electronics,

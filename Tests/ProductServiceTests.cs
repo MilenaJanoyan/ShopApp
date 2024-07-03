@@ -1,17 +1,17 @@
-﻿using ShopApp.Data;
+﻿using Xunit;
+using ShopApp.Data;
 using ShopApp.Models;
-using Xunit;
 using ShopApp.Services;
-using Microsoft.EntityFrameworkCore;
 using ShopApp.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using static ShopApp.Enums.ProductEnums;
 
 namespace ShopApp.Tests;
 
 public class ProductServiceTests
 {
-    private readonly IProductService _productService;
     private readonly ShopDbContext _context;
+    private readonly IProductService _productService;
 
     public ProductServiceTests()
     {
