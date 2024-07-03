@@ -109,4 +109,4 @@ This section provides instructions on setting up the PostgreSQL database and run
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps to contribute to the project
+Contributions are welcome!
