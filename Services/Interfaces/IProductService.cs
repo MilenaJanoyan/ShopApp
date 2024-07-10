@@ -1,4 +1,4 @@
-﻿using ShopApp.Models;
+﻿using ShopApp.Entities;
 
 namespace ShopApp.Services.Interfaces;
 

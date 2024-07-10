@@ -1,6 +1,6 @@
 ﻿using static ShopApp.Enums.ProductEnums;
 
-namespace ShopApp.Models;
+namespace ShopApp.Entities;
 
 public class Product
 {

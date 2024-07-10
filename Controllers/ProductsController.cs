@@ -1,27 +1,29 @@
-﻿using ShopApp.Models;
-using ShopApp.Repositories.Interfaces;
-using ShopApp.Services.Interfaces;
+﻿using ShopApp.Entities;
 using Microsoft.AspNetCore.Mvc;
+using ShopApp.Services.Interfaces;
+using ShopApp.Repositories.Interfaces;
 using static ShopApp.Enums.ProductEnums;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ShopApp.Controllers;
 
 /// <summary>
 /// Controller for managing products.
 /// </summary>
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class ProductsController : ControllerBase
 {
-    private readonly IProductRepository _productRepository;
     private readonly IProductService _productService;
+    private readonly IProductRepository _productRepository;
 
     public ProductsController(
-        IProductRepository productRepository,
-        IProductService productService)
+        IProductService productService,
+        IProductRepository productRepository)
     {
-        _productRepository = productRepository;
         _productService = productService;
+        _productRepository = productRepository;
     }
 
     //TODO: Add advanced search

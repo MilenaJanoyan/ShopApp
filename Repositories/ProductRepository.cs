@@ -1,14 +1,12 @@
 ﻿using ShopApp.Data;
-using ShopApp.Models;
+using ShopApp.Entities;
 using ShopApp.Repositories.Interfaces;
 
 namespace ShopApp.Repositories;
 
 public class ProductRepository : BaseRepository<Product>, IProductRepository
 {
-    public ProductRepository(ShopDbContext context) : base(context)
-    {
-    }
+    public ProductRepository(ShopDbContext context) : base(context) { }
 
     public async Task<IEnumerable<Product>> GetAllProductsAsync()
     {

@@ -1,5 +1,5 @@
 ﻿using ShopApp.Data;
-using ShopApp.Models;
+using ShopApp.Entities;
 using ShopApp.Services.Interfaces;
 using static ShopApp.Enums.ProductEnums;
 
@@ -36,14 +36,11 @@ public class ProductService : IProductService
 
         if (product.StockQuantity < quantityToBuy)
         {
-            // Not enough quantity in stock
             return false;
         }
 
-        // Reduce the quantity in stock
         product.StockQuantity -= quantityToBuy;
 
-        // Check if the quantity has become zero
         if (product.StockQuantity == 0)
         {
             product.Status = ProductStatus.OutOfStock;
