@@ -1,71 +1,95 @@
+using System.Text;
 using ShopApp.Data;
-using ShopApp.Repositories.Interfaces;
 using ShopApp.Services;
+using ShopApp.Settings;
+using ShopApp.Middleware;
+using ShopApp.Extensions;
+using ShopApp.Repositories;
 using ShopApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using System.Reflection;
-using ShopApp.Repositories;
-using ShopApp.Middleware;
+using Microsoft.IdentityModel.Tokens;
+using ShopApp.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    // Configure System.Text.Json settings here
-    options.JsonSerializerOptions.PropertyNamingPolicy = null; // Use CamelCasePropertyNamesContractResolver equivalent
-    options.JsonSerializerOptions.IgnoreNullValues = true; // Ignore null values during serialization
-});
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
-builder.Services.AddDbContext<ShopDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Dependency Injection for Services and Repositories
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-
-// Register the Swagger generator, defining 1 or more Swagger documents
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Version = "v1",
-        Title = "Shop API",
-        Description = "A simple example ASP.NET Core Web API for shop",
-    });
-
-    // Set the comments path for the Swagger JSON and UI.
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    c.IncludeXmlComments(xmlPath);
-});
+ConfigureServices(builder.Services, builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Shop API V1");
-        c.RoutePrefix = string.Empty; // Set Swagger UI at the root path (/)
-    });
-}
-else
-{
-    app.UseExceptionHandler("/Error");
-}
-
-app.UseMiddleware<ExceptionMiddleware>();
-
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapControllers();
+ConfigureMiddleware(app);
 
 app.Run();
+
+void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+{
+    services.AddControllers().AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        options.JsonSerializerOptions.IgnoreNullValues = true;
+    });
+
+    services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        var jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>();
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings.Issuer,
+            ValidAudience = jwtSettings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+        };
+    });
+
+    services.AddAuthorization();
+
+    services.AddDbContext<ShopDbContext>(options =>
+        options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+    services.AddScoped<IProductService, ProductService>();
+    services.AddScoped<IProductRepository, ProductRepository>();
+
+    services.AddSwaggerDocumentation();
+}
+
+void ConfigureMiddleware(WebApplication app)
+{
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Shop API V1");
+            c.RoutePrefix = string.Empty;
+        });
+    }
+    else
+    {
+        app.UseExceptionHandler("/Error");
+    }
+
+    app.UseMiddleware<ExceptionMiddleware>();
+
+    app.UseStaticFiles();
+
+    app.UseRouting();
+
+    app.UseHttpsRedirection();
+
+    app.UseAuthentication();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+}

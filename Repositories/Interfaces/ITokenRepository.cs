@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using ShopApp.Entities;
+﻿using ShopApp.Entities;
 
 namespace ShopApp.Repositories.Interfaces;
 

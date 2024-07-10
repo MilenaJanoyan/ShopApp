@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using ShopApp.Data;
 using ShopApp.Entities;
+using Microsoft.EntityFrameworkCore;
 using ShopApp.Repositories.Interfaces;
 
 namespace ShopApp.Repositories;
