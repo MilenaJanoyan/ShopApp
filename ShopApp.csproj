@@ -32,4 +32,8 @@
 		<Folder Include="Migrations\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Include=".github\workflows\lint.yml" />
+	</ItemGroup>
+
 </Project>
