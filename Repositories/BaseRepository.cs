@@ -1,6 +1,6 @@
 ﻿using ShopApp.Data;
-using Microsoft.EntityFrameworkCore;
 using ShopApp.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace ShopApp.Repositories;
 

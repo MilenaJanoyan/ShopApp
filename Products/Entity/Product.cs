@@ -1,16 +1,16 @@
-﻿using static ShopApp.Enums.ProductEnums;
+﻿using ShopApp.Products.Enum;
 
-namespace ShopApp.Models;
+namespace ShopApp.Products.Entity;
 
 public class Product
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
     public decimal Price { get; set; }
-    public ProductCategory Category { get; set; }
-    public ProductStatus Status { get; set; }
+    public ProductEnums.ProductCategory Category { get; set; }
+    public ProductEnums.ProductStatus Status { get; set; }
     public DateTime CreatedDate { get; set; }
     public List<string> Tags { get; set; }
     public int StockQuantity { get; set; }
-    public ProductUnit Unit { get; set; }
+    public ProductEnums.ProductUnit Unit { get; set; }
 }

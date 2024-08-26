@@ -1,6 +1,6 @@
-﻿using ShopApp.Models;
+﻿using ShopApp.Products.Entity;
 
-namespace ShopApp.Services.Interfaces;
+namespace ShopApp.Products.Service.Interface;
 
 public interface IProductService
 {

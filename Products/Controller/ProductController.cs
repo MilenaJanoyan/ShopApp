@@ -1,16 +1,17 @@
-﻿using ShopApp.Models;
+﻿using ShopApp.Products.Enum;
+using ShopApp.Products.Entity;
 using Microsoft.AspNetCore.Mvc;
-using ShopApp.Services.Interfaces;
-using ShopApp.Repositories.Interfaces;
-using static ShopApp.Enums.ProductEnums;
+using ShopApp.Products.Service.Interface;
+using ShopApp.Products.Repository.Interface;
 
-namespace ShopApp.Controllers;
+namespace ShopApp.Products.Controller;
 
 /// <summary>
 /// Controller for managing products.
 /// </summary>
-[Route("api/[controller]")]
+//[Authorize]
 [ApiController]
+[Route("api/[controller]")]
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
@@ -23,6 +24,12 @@ public class ProductsController : ControllerBase
         _productService = productService;
         _productRepository = productRepository;
     }
+
+    //TODO: Add advanced search
+
+    //TODO: Add get for all the products
+
+    //TODO: Add users, login and other realted logic
 
     /// <summary>
     /// Retrieves a list of products.
@@ -64,7 +71,7 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<Product>> PostProduct(Product product)
     {
         product.Id = Guid.NewGuid();
-        product.Status = ProductStatus.InStock;
+        product.Status = ProductEnums.ProductStatus.InStock;
         product.CreatedDate = DateTime.UtcNow;
         await _productRepository.AddProductAsync(product);
         return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
@@ -117,7 +124,7 @@ public class ProductsController : ControllerBase
             return NotFound();
         }
 
-        if (product.Status == ProductStatus.OutOfStock)
+        if (product.Status == ProductEnums.ProductStatus.OutOfStock)
         {
             return BadRequest("Product is currently out of stock.");
         }
