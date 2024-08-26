@@ -1,14 +1,20 @@
 using System.Text;
 using ShopApp.Data;
-using ShopApp.Services;
 using ShopApp.Settings;
 using ShopApp.Middleware;
 using ShopApp.Extensions;
-using ShopApp.Repositories;
-using ShopApp.Services.Interfaces;
+using ShopApp.Users.Repository;
+using ShopApp.Products.Service;
+using ShopApp.Products.Repository;
+using ShopApp.Authorization.Service;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using ShopApp.Repositories.Interfaces;
+using ShopApp.Authorization.Repository;
+using ShopApp.Products.Service.Interface;
+using ShopApp.Users.Repository.Interface;
+using ShopApp.Products.Repository.Interface;
+using ShopApp.Authorization.Service.Interfaces;
+using ShopApp.Authorization.Repository.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,9 +63,13 @@ void ConfigureServices(IServiceCollection services, IConfiguration configuration
     services.AddDbContext<ShopDbContext>(options =>
         options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
+    services.AddScoped<ITokenRepository, TokenRepository>();
+    services.AddScoped<IAuthService, AuthService>();
+    services.AddScoped<IPasswordService, PasswordService>();
+    services.AddScoped<ITokenService, TokenService>();
     services.AddScoped<IProductService, ProductService>();
     services.AddScoped<IProductRepository, ProductRepository>();
-
+    services.AddScoped<IUserRepository, UserRepository>();
     services.AddSwaggerDocumentation();
 }
 

@@ -1,5 +1,7 @@
-﻿using ShopApp.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using ShopApp.Users.Entity;
+using ShopApp.Products.Entity;
+using ShopApp.Authorization.Entity;
 
 namespace ShopApp.Data;
 
