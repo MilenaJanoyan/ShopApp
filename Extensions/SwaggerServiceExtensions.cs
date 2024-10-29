@@ -12,8 +12,8 @@ public static class SwaggerServiceExtensions
             c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Shop API",
-                Description = "A simple example ASP.NET Core Web API for shop",
+                Title = "MIMODA SHOP API",
+                Description = "An ASP.NET Core Web API for MIMODA clothing store",
             });
 
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

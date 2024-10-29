@@ -80,7 +80,7 @@ void ConfigureMiddleware(WebApplication app)
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Shop API V1");
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "MIMODA Shop API V1");
             c.RoutePrefix = string.Empty;
         });
     }

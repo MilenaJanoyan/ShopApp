@@ -2,8 +2,6 @@
 using ShopApp.Users.Entity;
 using ShopApp.Repositories;
 using ShopApp.Users.Repository.Interface;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ShopApp.Users.Repository;
 
@@ -99,5 +97,4 @@ public class UserRepository : BaseRepository<User>, IUserRepository
             throw new ApplicationException($"Error occurred while retrieving the user: {ex.Message}", ex);
         }
     }
-
 }
